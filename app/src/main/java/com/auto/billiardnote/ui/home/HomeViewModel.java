@@ -8,6 +8,7 @@ import android.media.ImageWriter;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import androidx.lifecycle.LiveData;
@@ -19,18 +20,18 @@ import java.util.ArrayList;
 public class HomeViewModel extends ViewModel {
 
     private final MutableLiveData<String> mText;
-    private final MutableLiveData<ImageView> mImgView;
+    private final MutableLiveData<ImageButton> mImgButton;
 
     public HomeViewModel() {
         mText = new MutableLiveData<>();
-        mImgView = new MutableLiveData<>();
+        mImgButton = new MutableLiveData<>();
     }
 
     public LiveData<String> getText() {
         return mText;
     }
 
-    public  LiveData<ImageView> getImageView() {
-        return mImgView;
+    public LiveData<ImageButton> getImgButton() {
+        return mImgButton;
     }
 }

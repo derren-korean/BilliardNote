@@ -14,7 +14,7 @@ public class CanvasView extends View {
 
     Context context;
 
-    private LineArrayList lineArrayList = new LineArrayList();
+    protected LineArrayList lineArrayList = new LineArrayList();
 
     private static final float TOLERANCE = 5;
     private Path m_path;
@@ -49,12 +49,15 @@ public class CanvasView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        // DRAWING THE GUIDE LINE BEFORE TOUCH_UP
         canvas.drawLine(m_startX, m_startY, m_endX, m_endY, m_paint);
 
         if (this.m_isTouchUp) {
             m_currentLine = new MyLine(m_startX, m_startY, m_endX, m_endY, m_paint);
             lineArrayList.add(m_currentLine);
         }
+
+        // AFTER RESET, DRAWING ALL OF THE LINES
         for(MyLine line: lineArrayList)
         {
             _draw_line(line, canvas);

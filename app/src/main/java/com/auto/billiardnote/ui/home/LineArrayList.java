@@ -21,4 +21,9 @@ public class LineArrayList extends ArrayList<MyLine>{
     private MyLine _getLastLine() {
         return this.get(this.size()-1);
     }
+
+    @Override
+    public boolean isEmpty() {
+        return this == null || this.size() == 0;
+    }
 }
