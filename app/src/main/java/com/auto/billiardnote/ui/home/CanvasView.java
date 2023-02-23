@@ -10,13 +10,11 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.util.ArrayList;
-
 public class CanvasView extends View {
 
     Context context;
 
-    protected ArrayList<MyLine> lineArrayList = new ArrayList<>();
+    private LineArrayList lineArrayList = new LineArrayList();
 
     private static final float TOLERANCE = 5;
     private Path m_path;
@@ -71,6 +69,10 @@ public class CanvasView extends View {
                 this.m_drawPoint = true;
                 m_startX = event.getX();
                 m_startY = event.getY();
+                if (lineArrayList.size() > 0) {
+                    m_startX = lineArrayList.getLastEndX();
+                    m_startY = lineArrayList.getLastEndY();
+                }
                 // Set the end to prevent initial jump (like on the demo recording)
                 m_endX = event.getX();
                 m_endY = event.getY();
@@ -92,7 +94,7 @@ public class CanvasView extends View {
     }
 
     private void _draw_line(MyLine line, Canvas canvas) {
-        canvas.drawLine(line.startX, line.startY, line.endX, line.endY, line.paint);
+        canvas.drawLine(line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY(), line.getPaint());
     }
 
     private void _touch_up() {
@@ -115,19 +117,6 @@ public class CanvasView extends View {
             m_endX = x;
             m_endY = y;
             m_drawPoint = false;
-        }
-    }
-
-    class MyLine {
-        private float startX, startY, endX, endY;
-        Paint paint;
-
-        public MyLine(float startX, float startY, float endX, float endY, Paint paint) {
-            this.startX = startX;
-            this.startY = startY;
-            this.endX = endX;
-            this.endY = endY;
-            this.paint = paint;
         }
     }
 }
