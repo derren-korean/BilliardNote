@@ -29,6 +29,7 @@ public class HomeFragment extends Fragment {
         final TextView textView = binding.textHome;
         final CanvasView canvasView = binding.canvas;
         final TextView preview = binding.textPreview;
+
         homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
 //        TODO: undo버튼을 비활성 하기: xml이나 java에 binding하여 버튼이 unclickable이나 enable을 제어한다.
@@ -38,11 +39,8 @@ public class HomeFragment extends Fragment {
         undoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Log.i("canvasLineChanged",String.valueOf(canvasView.lineArrayList.size()));
-//                if (canvasView.lineArrayList.size() > 0) {
-//                    canvasView.lineArrayList.remove(canvasView.lineArrayList.size()-1);
-////                    canvasView.drawLines();
-//                }
+                canvasView.unDo();
+
             }
         });
 
