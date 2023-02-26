@@ -63,7 +63,6 @@
                     android:theme="@android:style/Theme.Holo"
                     style="?android:attr/borderlessButtonStyle"
                     android:onClick="unDoLine"
-                    android:clickable="true"
                 />
             </LinearLayout>
 
@@ -71,6 +70,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1">
+                <TextView
+                    android:id="@+id/text_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"></TextView>
             </LinearLayout>
 
             <LinearLayout
