@@ -1,20 +1,22 @@
 package com.auto.billiardnote.ui.home;
 
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 
 import java.util.ArrayList;
 
-public class CanvasTool {
+public class StraightLine {
     private ArrayList<Path> paths;
     private ArrayList<PathPoint> pathPoints;
     private PathPoint pathPoint;
     private float startX, startY, stopX, stopY;
     private Path path;
     private Paint paint;
+    final float TOLERANCE = 4;
 
-    protected CanvasTool() {
+    protected StraightLine() {
         this.pathPoint = new PathPoint();
         this.pathPoints = new ArrayList<>();
         this.paint = new Paint();
@@ -50,39 +52,9 @@ public class CanvasTool {
         this.stopY = y;
     }
 
-    protected ArrayList<Path> getPaths() {
-        return this.paths;
-    }
+    private boolean _isEmpty() {return this.stopX < 0.0f && this.stopY < 0.0f;}
 
-    protected float getStartX() {
-        return this.startX;
-    }
-
-    protected float getStartY() {
-        return this.startY;
-    }
-
-    protected float getStopX() {
-        return this.stopX;
-    }
-
-    protected float getStopY() {
-        return this.stopY;
-    }
-
-    protected Path getPath() {
-        return this.path;
-    }
-
-    protected Paint getPaint() {
-        return this.paint;
-    }
-
-    protected boolean isEmpty() {
-        return this.stopX < 0.0f && this.stopY < 0.0f;
-    }
-
-    protected void saveAndInitPath() {
+    private void _saveAndInitPath() {
         this.pathPoint.setPoint(this.startX, this.startY, this.stopX, this.stopY);
         this.pathPoints.add(this.pathPoint);
         this.paths.add(this.path);
@@ -113,5 +85,40 @@ public class CanvasTool {
                 this.pathPoints.get(index).getStartX(),
                 this.pathPoints.get(index).getStartY()
         );
+    }
+
+    protected void touch_start(float x, float y) {
+        this.path.reset();
+        if (_isEmpty()) {
+            this.setStopPoint(x, y);
+        } else {
+            x = stopX;
+            y = stopY;
+        }
+        path.moveTo(x, y);
+        this.setStartPoint(x, y);
+    }
+
+    protected void touch_move(float x, float y) {
+        float dx = Math.abs(x - startX);
+        float dy = Math.abs(y - startY);
+        if (dx >= TOLERANCE || dy >= TOLERANCE) {
+            this.setStopPoint(x, y);
+        }
+    }
+
+    protected void touch_up(float x, float y) {
+        path.lineTo(x, y);
+        this.setStopPoint(x, y);
+        _saveAndInitPath();
+    }
+
+    protected void draw(Canvas canvas) {
+        drawLine(canvas);
+        paths.forEach(_path -> canvas.drawPath(_path, paint));
+    }
+
+    protected void drawLine(Canvas canvas) {
+        canvas.drawLine(startX, startY, stopX, stopY, paint);
     }
 }
