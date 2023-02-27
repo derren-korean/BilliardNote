@@ -28,20 +28,14 @@ public class HomeFragment extends Fragment {
         final ImageButton undoButton = binding.undoLine;
         final TextView textView = binding.textHome;
         final CanvasView canvasView = binding.canvas;
-        final TextView preview = binding.textPreview;
 
         homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
-//        TODO: undo버튼을 비활성 하기: xml이나 java에 binding하여 버튼이 unclickable이나 enable을 제어한다.
-//        또한 비활성화 시 눌러도 반응이 없거나, 그림이 조금 연해야 한다.
-//        undoButton.setVisibility(canvasView.lineArrayList.size()>0 ? View.VISIBLE : View.INVISIBLE);
-//        preview.setText(String.valueOf(canvasView.lineArrayList.size()));
+//      TODO: undo버튼을 비활성 하기: xml이나 java에 binding하여 버튼이 unclickable이나 enable을 제어한다.
+//        TODO: 왼쪽은 당구공 팔렛트이다. Circle을 만들어서 canvasView에 위치를 선정하여 넣는다. 클래스를 만들어서 진행한다.
         undoButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                canvasView.unDo();
-
-            }
+            public void onClick(View view) {canvasView.unDo();}
         });
 
         return root;
