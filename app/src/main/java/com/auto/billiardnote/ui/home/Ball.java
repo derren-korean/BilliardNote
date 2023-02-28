@@ -1,18 +1,53 @@
 package com.auto.billiardnote.ui.home;
 
-import android.graphics.Color;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 
-public class Ball {
+public class Ball extends Circle{
 
-    private int x, y, radius;
-    private Color color;
+    private Paint paint;
+    private final float TOLERANCE = 4;
+    private ShapeClickInterface clickListener;
 
-    public Ball (int x, int y, int radius, Color color)
+    public Ball (float x, float y, float r, DrawingTool tool)
     {
-        this.x = x;
-        this.y = y;
-        this.radius = radius;
-        this.color = color;
+        super(x, y, r);
+        paint = DrawingTool.getPaint(tool);
+    }
+
+    public float getX() {
+        return super.getX();
+    }
+
+    public float getY() {
+        return super.getY();
+    }
+
+    public void setCoordinate(float x, float y) {
+        super.setCoordinate(x, y);
+    }
+
+    public boolean touch_move(float x, float y) {
+        float dx = Math.abs(x - super.getX());
+        float dy = Math.abs(y - super.getY());
+        if (dx >= TOLERANCE || dy >= TOLERANCE) {
+            super.setCoordinate(Math.round(x), Math.round(y));
+            System.out.println("x:"+x+", y:"+y);
+            return true;
+        }
+        return false;
+    }
+
+    public float getRadius() {
+        return super.getRadius();
+    }
+
+    public void draw(Canvas canvas) {
+        canvas.drawCircle(super.getX(), super.getY(), super.getRadius(), paint);
+    }
+
+    public void setClickListener(ShapeClickInterface listener) {
+        this.clickListener = listener;
     }
 
 }
