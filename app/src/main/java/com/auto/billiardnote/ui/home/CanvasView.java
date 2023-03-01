@@ -1,21 +1,20 @@
 package com.auto.billiardnote.ui.home;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class CanvasView extends View {
 
     Context context;
-    private Bitmap m_bitmap;
-    private Canvas m_canvas;
     private StraightLine line;
-    private HashMap<DrawingTool,Ball> balls;
+    private HashMap<DrawingTool, Ball> balls;
     private DrawingTool drawingTool;
     private ShapeClickInterface listener;
 
@@ -34,20 +33,19 @@ public class CanvasView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        m_bitmap = Bitmap.createBitmap(w,h,Bitmap.Config.ARGB_8888);
-        m_canvas = new Canvas(m_bitmap);
+        Arrays.stream(DrawingTool.values())
+                .filter(tool -> tool.getColor() != Color.BLACK)
+                .forEach(tool -> createCircle(tool));
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-
         switch (this.drawingTool) {
             case LINE:
                 line.draw(canvas);
                 break;
             case CUE_BALL: case ORANGE_BALL: case RED_BALL:
                 balls.values().forEach(ball -> ball.draw(canvas));
-//                balls.get(this.drawingTool).draw(canvas);
                 break;
         }
     }
@@ -56,6 +54,16 @@ public class CanvasView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
+        if (x < 0f) {
+            x = 0f;
+        } else if (x > getWidth()) {
+            x = getWidth();
+        }
+        if (y < 0f) {
+            y = 0f;
+        } else if (y > getHeight()) {
+            y = getHeight();
+        }
         if (this.drawingTool == DrawingTool.LINE) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -86,13 +94,11 @@ public class CanvasView extends View {
 
     public void createCircle(DrawingTool tool) {
         this.drawingTool = tool;
-        Ball ball = new Ball( _toFloat(getWidth() / 2), _toFloat(getHeight() / 2), 40f, tool);
+        Ball ball = new Ball( getWidth() / 2f, getHeight() / 2f, 40f, tool);
         ball.setClickListener(listener);
         balls.put(tool, ball);
         this.invalidate();
     }
-
-    private float _toFloat(int a) {return (float) a;}
 
     public void unDo() {
         if (line.unDo()) {invalidate();}

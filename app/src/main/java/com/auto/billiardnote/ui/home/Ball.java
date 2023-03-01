@@ -32,7 +32,6 @@ public class Ball extends Circle{
         float dy = Math.abs(y - super.getY());
         if (dx >= TOLERANCE || dy >= TOLERANCE) {
             super.setCoordinate(Math.round(x), Math.round(y));
-            System.out.println("x:"+x+", y:"+y);
             return true;
         }
         return false;
