@@ -27,4 +27,8 @@ public class Circle {
     public float getRadius() {
         return r;
     }
+
+    protected boolean isWithin(float x, float y) {
+        return (this.x-r) <= x && x <= (this.x+r) && (this.y-r) <= y && y <= (this.y+r);
+    }
 }

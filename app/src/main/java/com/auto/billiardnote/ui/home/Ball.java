@@ -49,4 +49,7 @@ public class Ball extends Circle{
         this.clickListener = listener;
     }
 
+    public boolean isWithin(float x, float y) {
+        return super.isWithin(x, y);
+    }
 }
