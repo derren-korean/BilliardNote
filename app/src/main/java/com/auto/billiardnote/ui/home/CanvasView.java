@@ -9,14 +9,15 @@ import android.view.View;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 public class CanvasView extends View {
 
     Context context;
     private StraightLine line;
-    private HashMap<DrawingTool, Ball> balls;
     private DrawingTool drawingTool;
     private ShapeClickInterface listener;
+    private HashMap<DrawingTool, Ball> balls;
 
     public void setClickListener(ShapeClickInterface listener) {
         this.listener = listener;
@@ -25,8 +26,8 @@ public class CanvasView extends View {
     public CanvasView(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
-        line = new StraightLine();
         balls = new HashMap<>();
+        line = new StraightLine();
         drawingTool = DrawingTool.CUE_BALL;
     }
 
@@ -40,14 +41,9 @@ public class CanvasView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        switch (this.drawingTool) {
-            case LINE:
-                line.draw(canvas);
-                break;
-            case CUE_BALL: case ORANGE_BALL: case RED_BALL:
-                balls.values().forEach(ball -> ball.draw(canvas));
-                break;
-        }
+        line.draw(canvas);
+        balls.values().forEach(ball -> ball.draw(canvas));
+        canvas.save();
     }
 
     @Override
@@ -64,6 +60,7 @@ public class CanvasView extends View {
         } else if (y > getHeight()) {
             y = getHeight();
         }
+
         if (this.drawingTool == DrawingTool.LINE) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -92,6 +89,25 @@ public class CanvasView extends View {
         return true;
     }
 
+    private DrawingTool _getBallTool(float x, float y) {
+        DrawingTool tool = this.drawingTool;
+        balls.containsValue(balls.values().stream()
+                .filter(ball -> ball.isWithin(x, y))
+                .findFirst()
+                .get());
+        for (Map.Entry<DrawingTool, Ball> entry : balls.entrySet()) {
+            if (entry.getValue().isWithin(x, y)) {
+                tool = entry.getKey();
+                break;
+            }
+        }
+        return tool;
+    }
+//    private boolean _isBall(float x, float y) {
+//        return balls.values().stream()
+//                .anyMatch(ball -> ball.isWithin(x, y));
+//    }
+
     public void createCircle(DrawingTool tool) {
         this.drawingTool = tool;
         Ball ball = new Ball( getWidth() / 2f, getHeight() / 2f, 40f, tool);
@@ -101,10 +117,12 @@ public class CanvasView extends View {
     }
 
     public void unDo() {
-        if (line.unDo()) {invalidate();}
+        if (line.unDo()) {
+            invalidate();
+        }
     }
 
-    //TODO: click ShapeClickListener의 범위를 지정하여, 해당 범위에 클릭이 되었을 때, DrawingTool을 지정한다.
-    //TODO: 해당 범위는 마지막 도착지점을 기록하여 해당 위치의 Radius 만큼 있을 때 반응한다.
-    //TODO: 선그리기 버튼을 이용하여, 선을 그릴때 무시할 수 있도록 한다.
+    public void selectTool(DrawingTool tool) {
+        this.drawingTool = tool;
+    }
 }

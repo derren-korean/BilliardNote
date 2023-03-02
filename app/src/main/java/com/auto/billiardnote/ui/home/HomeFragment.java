@@ -1,9 +1,11 @@
 package com.auto.billiardnote.ui.home;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,9 +14,14 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.auto.billiardnote.databinding.FragmentHomeBinding;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class HomeFragment extends Fragment implements ShapeClickInterface {
 
     private FragmentHomeBinding binding;
+    private ArrayList<ImageButton> buttons;
+    private final int disabled = Color.rgb(200, 200, 200);
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -26,35 +33,64 @@ public class HomeFragment extends Fragment implements ShapeClickInterface {
 
         final TextView textView = binding.textHome;
         final CanvasView canvasView = binding.canvas;
+        buttons = new ArrayList<>(Arrays.asList(binding.cueBall, binding.redBall, binding.orangeBall, binding.line));
         canvasView.setClickListener(this);
 
         homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
-//      TODO: undo버튼을 비활성 하기: xml이나 java에 binding하여 버튼이 unclickable이나 enable을 제어한다.
-//        TODO: 왼쪽은 당구공 팔렛트이다. Circle을 만들어서 canvasView에 위치를 선정하여 넣는다. 클래스를 만들어서 진행한다.
         binding.undoLine.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {canvasView.unDo();}
+            public void onClick(View view) {
+                canvasView.unDo();
+                _setToolNBGColor(DrawingTool.LINE, binding.line, Color.DKGRAY);
+            }
         });
         binding.cueBall.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {draw(DrawingTool.CUE_BALL);}
+            public void onClick(View view) {
+                _setToolNBGColor(DrawingTool.CUE_BALL, binding.cueBall, disabled);
+            }
         });
         binding.orangeBall.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {draw(DrawingTool.ORANGE_BALL);}
+            public void onClick(View view) {
+                _setToolNBGColor(DrawingTool.ORANGE_BALL, binding.orangeBall, disabled);
+            }
         });
 
         binding.redBall.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {draw(DrawingTool.RED_BALL);}
+            public void onClick(View view) {
+                _setToolNBGColor(DrawingTool.RED_BALL, binding.redBall, disabled);
+            }
+        });
+        binding.line.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                _setToolNBGColor(DrawingTool.LINE, binding.line, Color.DKGRAY);
+            }
         });
 
         return root;
     }
 
-    public void draw(DrawingTool tool) {
-        this.binding.canvas.createCircle(tool);
+    private void _setToolNBGColor(DrawingTool tool, ImageButton button, int color) {
+        selectTool(tool);
+        _setOtherToolsBGColor(button, color);
+    }
+
+    private void _setOtherToolsBGColor(ImageButton except, int disabled) {
+        buttons.stream().forEach(imageButton -> {
+            if (imageButton.equals(except)) {
+                imageButton.setBackgroundColor(Color.WHITE);
+            } else {
+                imageButton.setBackgroundColor(disabled);
+            }
+        });
+    }
+
+    public void selectTool(DrawingTool tool) {
+        this.binding.canvas.selectTool(tool);
     }
 
     @Override
@@ -67,4 +103,5 @@ public class HomeFragment extends Fragment implements ShapeClickInterface {
     public void onCircleClick() {
 
     }
+
 }
