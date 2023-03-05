@@ -18,6 +18,7 @@ public class CanvasView extends View {
     private DrawingTool drawingTool;
     private ShapeClickInterface listener;
     private HashMap<DrawingTool, Ball> balls;
+    public boolean isReadOnly = false;
 
     public void setClickListener(ShapeClickInterface listener) {
         this.listener = listener;
@@ -122,7 +123,16 @@ public class CanvasView extends View {
         }
     }
 
+    public boolean setReadOnlyState(boolean status) {
+        this.isReadOnly = !status;
+        return this.isReadOnly;
+    }
+
     public void selectTool(DrawingTool tool) {
         this.drawingTool = tool;
+    }
+
+    public DrawingTool getDrawingTool() {
+        return this.drawingTool;
     }
 }
