@@ -1,24 +1,23 @@
-package com.auto.billiardnote.ui.home;
+package com.auto.billiardnote.ui.home.draw;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 
 public class CanvasView extends View {
 
     Context context;
-    private StraightLine line;
+    private final StraightLine line;
+    private final HashMap<DrawingTool, Ball> balls;
     private DrawingTool drawingTool;
     private ShapeClickInterface listener;
-    private HashMap<DrawingTool, Ball> balls;
-    public boolean isReadOnly = false;
+    public boolean enabled = true; // read-only: false, editable: true
 
     public void setClickListener(ShapeClickInterface listener) {
         this.listener = listener;
@@ -36,8 +35,9 @@ public class CanvasView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         Arrays.stream(DrawingTool.values())
-                .filter(tool -> tool.getColor() != Color.BLACK)
-                .forEach(tool -> createCircle(tool));
+                .filter(tool -> tool != DrawingTool.LINE)
+                .forEach(this::createCircle);
+        this.setDrawingTool(DrawingTool.CUE_BALL);
     }
 
     @Override
@@ -49,6 +49,9 @@ public class CanvasView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if(!enabled) {
+            return false;
+        }
         float x = event.getX();
         float y = event.getY();
         if (x < 0f) {
@@ -80,7 +83,7 @@ public class CanvasView extends View {
         } else {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_MOVE:
-                    balls.get(this.drawingTool).touch_move(x, y);
+                    Objects.requireNonNull(balls.get(this.drawingTool)).touch_move(x, y);
                     invalidate();
                     break;
                 case MotionEvent.ACTION_DOWN: case MotionEvent.ACTION_UP:
@@ -90,20 +93,20 @@ public class CanvasView extends View {
         return true;
     }
 
-    private DrawingTool _getBallTool(float x, float y) {
-        DrawingTool tool = this.drawingTool;
-        balls.containsValue(balls.values().stream()
-                .filter(ball -> ball.isWithin(x, y))
-                .findFirst()
-                .get());
-        for (Map.Entry<DrawingTool, Ball> entry : balls.entrySet()) {
-            if (entry.getValue().isWithin(x, y)) {
-                tool = entry.getKey();
-                break;
-            }
-        }
-        return tool;
-    }
+//    private DrawingTool _getBallTool(float x, float y) {
+//        DrawingTool tool = this.drawingTool;
+//        balls.containsValue(balls.values().stream()
+//                .filter(ball -> ball.isWithin(x, y))
+//                .findFirst()
+//                .get());
+//        for (Map.Entry<DrawingTool, Ball> entry : balls.entrySet()) {
+//            if (entry.getValue().isWithin(x, y)) {
+//                tool = entry.getKey();
+//                break;
+//            }
+//        }
+//        return tool;
+//    }
 //    private boolean _isBall(float x, float y) {
 //        return balls.values().stream()
 //                .anyMatch(ball -> ball.isWithin(x, y));
@@ -123,12 +126,12 @@ public class CanvasView extends View {
         }
     }
 
-    public boolean setReadOnlyState(boolean status) {
-        this.isReadOnly = !status;
-        return this.isReadOnly;
+    public boolean setEnable(boolean enable) {
+        this.enabled = enable;
+        return this.enabled;
     }
 
-    public void selectTool(DrawingTool tool) {
+    public void setDrawingTool(DrawingTool tool) {
         this.drawingTool = tool;
     }
 

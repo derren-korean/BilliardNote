@@ -1,4 +1,4 @@
-package com.auto.billiardnote.ui.home;
+package com.auto.billiardnote.ui.home.draw;
 
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -33,4 +33,5 @@ public enum DrawingTool {
         }
         return paint;
     }
+
 }
