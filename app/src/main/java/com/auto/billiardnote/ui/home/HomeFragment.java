@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -14,6 +14,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.auto.billiardnote.R;
 import com.auto.billiardnote.databinding.FragmentHomeBinding;
+import com.auto.billiardnote.ui.home.draw.CanvasView;
+import com.auto.billiardnote.ui.home.draw.DrawingTool;
+import com.auto.billiardnote.ui.home.draw.ShapeClickInterface;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,8 +24,8 @@ import java.util.Arrays;
 public class HomeFragment extends Fragment implements ShapeClickInterface {
 
     private FragmentHomeBinding binding;
-    private ArrayList<ImageButton> buttons;
-    final static int DISABLED = Color.rgb(200, 200, 200);
+    private ArrayList<DrawingButton> drawingButtons;
+    private ArrayList<View> functionView;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -37,64 +40,70 @@ public class HomeFragment extends Fragment implements ShapeClickInterface {
 
         homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         canvasView.setClickListener(this);
-        buttons = new ArrayList<>(Arrays.asList(binding.cueBall, binding.redBall, binding.orangeBall, binding.line));
-        setReadMode(canvasView.isReadOnly);
-        binding.changeMode.setBackgroundResource(canvasView.isReadOnly ? R.drawable.ic_read_mode_foreground : R.drawable.ic_edit_mode_foreground);
+
+        functionView = new ArrayList<>(Arrays.asList(textView, binding.undoLine));
+        drawingButtons = new ArrayList<>(Arrays.asList(binding.line, binding.cueBall, binding.orangeBall, binding.redBall));
+        for (int i = 0; i < drawingButtons.size(); i++) {
+            drawingButtons.get(i).setTool(DrawingTool.values()[i]);
+        }
+
+        modeChange(canvasView.enabled);
 
         binding.undoLine.setOnClickListener(v -> {
             canvasView.unDo();
-            _setToolNBGColor(DrawingTool.LINE, binding.line);
+            _setToolNBGColor(binding.line);
         });
-        binding.cueBall.setOnClickListener(v -> _setToolNBGColor(DrawingTool.CUE_BALL, binding.cueBall));
-        binding.orangeBall.setOnClickListener(v -> _setToolNBGColor(DrawingTool.ORANGE_BALL, binding.orangeBall));
-        binding.redBall.setOnClickListener(v -> _setToolNBGColor(DrawingTool.RED_BALL, binding.redBall));
-        binding.line.setOnClickListener(v -> _setToolNBGColor(DrawingTool.LINE, binding.line));
-        binding.changeMode.setOnClickListener(v -> modeChange(binding.canvas.isReadOnly));
+        binding.line.setOnClickListener(v -> _setToolNBGColor(binding.line));
+        binding.cueBall.setOnClickListener(v -> _setToolNBGColor(binding.cueBall));
+        binding.orangeBall.setOnClickListener(v -> _setToolNBGColor(binding.orangeBall));
+        binding.redBall.setOnClickListener(v -> _setToolNBGColor(binding.redBall));
+        binding.changeMode.setOnClickListener(v -> modeChange(!binding.canvas.enabled));
 
         return root;
     }
 
-    private void _setToolNBGColor(DrawingTool tool, ImageButton button) {
-        selectTool(tool);
+    private void _setInitUIDrawingButton(boolean enable) {
+        if (enable) {
+            DrawingButton button = drawingButtons.stream()
+                    .filter(b -> b.getTool() == binding.canvas.getDrawingTool())
+                    .findFirst().orElse(binding.cueBall);
+            _setOtherToolsBGColor(button);
+        }
+    }
+
+    private void _setToolNBGColor(DrawingButton button) {
+        selectTool(button.getTool());
         _setOtherToolsBGColor(button);
     }
 
-    private void _setOtherToolsBGColor(ImageButton except) {
-        for (ImageButton button : buttons) {
-            if (button.equals(except)) {
-                button.setBackgroundColor(Color.WHITE);
-            } else {
-                button.setBackgroundColor(DISABLED);
-            }
+    private void _setOtherToolsBGColor(DrawingButton except) {
+        for (DrawingButton button : drawingButtons) {
+            button.setBackgroundColor(_getEnableColor(button.equals(except)));
         }
     }
 
-    private void setReadMode(boolean status) {
-        for (ImageButton button : buttons) {
-            //TODO: disabled color 지정을 위해서, edit모드시 선택된 tool만 활성화하는 기능을 위해서 custom button으로 변경한다.
-            button.setEnabled(!status);
-            button.setBackgroundColor(status ? DISABLED : Color.WHITE);
-        }
-        binding.line.setEnabled(!status);
-        binding.canvas.setEnabled(!status);
-        binding.textHome.setEnabled(!status);
-        binding.undoLine.setEnabled(!status);
-        if(status) {
-            binding.textHome.setBackgroundColor(DISABLED);
-            binding.undoLine.setBackgroundColor(DISABLED);
-        } else {
-            binding.textHome.setBackgroundColor(Color.WHITE);
-            binding.undoLine.setBackgroundColor(Color.WHITE);
-        }
+    private void setEnable(boolean enable) {
+        binding.canvas.setEnabled(enable);
+        drawingButtons.forEach(button -> button.setModeChange(enable));
+        _setInitUIDrawingButton(enable);
+        functionView.forEach(view -> {
+                view.setEnabled(enable);
+                view.setBackgroundColor(_getEnableColor(enable));
+        });
     }
 
     public void selectTool(DrawingTool tool) {
-        this.binding.canvas.selectTool(tool);
+        this.binding.canvas.setDrawingTool(tool);
     }
 
-    public void modeChange(boolean toggle) {
-        setReadMode(binding.canvas.setReadOnlyState(toggle));
-        binding.changeMode.setBackgroundResource(toggle ? R.drawable.ic_edit_mode_foreground : R.drawable.ic_read_mode_foreground);
+    public void modeChange(boolean enable) {
+        setEnable(binding.canvas.setEnable(enable));
+        binding.changeMode.setBackgroundResource(enable ? R.drawable.ic_read_mode_foreground : R.drawable.ic_edit_mode_foreground);
+        Toast.makeText(this.getContext(),enable ? "수정 모드" : "읽기 모드", Toast.LENGTH_SHORT).show();
+    }
+
+    private int _getEnableColor(boolean enable) {
+        return enable ? Color.WHITE : Color.DKGRAY;
     }
 
     @Override

@@ -1,8 +1,10 @@
-package com.auto.billiardnote.ui.home;
+package com.auto.billiardnote.ui.home.draw;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+
+import com.auto.billiardnote.ui.home.draw.shape.PathPoint;
 
 import java.util.ArrayList;
 

@@ -1,9 +1,11 @@
-package com.auto.billiardnote.ui.home;
+package com.auto.billiardnote.ui.home.draw;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
-public class Ball extends Circle{
+import com.auto.billiardnote.ui.home.draw.shape.Circle;
+
+public class Ball extends Circle {
 
     private Paint paint;
     private final float TOLERANCE = 4;
