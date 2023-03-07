@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.auto.billiardnote.R;
 import com.auto.billiardnote.databinding.FragmentHomeBinding;
+import com.auto.billiardnote.fao.FileHandler;
 import com.auto.billiardnote.ui.home.draw.CanvasView;
 import com.auto.billiardnote.ui.home.draw.DrawingTool;
 import com.auto.billiardnote.ui.home.draw.ShapeClickInterface;
@@ -35,23 +36,21 @@ public class HomeFragment extends Fragment implements ShapeClickInterface {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+
         final TextView textView = binding.textHome;
         final CanvasView canvasView = binding.canvas;
-
         homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-        canvasView.setClickListener(this);
+        _initView(textView, canvasView);
 
-        functionView = new ArrayList<>(Arrays.asList(textView, binding.undoLine));
-        drawingButtons = new ArrayList<>(Arrays.asList(binding.line, binding.cueBall, binding.orangeBall, binding.redBall));
-        for (int i = 0; i < drawingButtons.size(); i++) {
-            drawingButtons.get(i).setTool(DrawingTool.values()[i]);
-        }
-
-        modeChange(canvasView.enabled);
 
         binding.undoLine.setOnClickListener(v -> {
             canvasView.unDo();
             _setToolNBGColor(binding.line);
+        });
+        // TODO: data save and load
+        binding.imageView2.setOnClickListener(v -> {
+            FileHandler.read();
+            binding.textHome.setText(FileHandler.getMyData());
         });
         binding.line.setOnClickListener(v -> _setToolNBGColor(binding.line));
         binding.cueBall.setOnClickListener(v -> _setToolNBGColor(binding.cueBall));
@@ -60,6 +59,18 @@ public class HomeFragment extends Fragment implements ShapeClickInterface {
         binding.changeMode.setOnClickListener(v -> modeChange(!binding.canvas.enabled));
 
         return root;
+    }
+
+    private void _initView(final TextView textView, final CanvasView canvasView) {
+
+        canvasView.setClickListener(this);
+
+        functionView = new ArrayList<>(Arrays.asList(textView, binding.undoLine));
+        drawingButtons = new ArrayList<>(Arrays.asList(binding.line, binding.cueBall, binding.orangeBall, binding.redBall));
+        for (int i = 0; i < drawingButtons.size(); i++) {
+            drawingButtons.get(i).setTool(DrawingTool.values()[i]);
+        }
+        modeChange(canvasView.enabled);
     }
 
     private void _setInitUIDrawingButton(boolean enable) {
@@ -93,13 +104,13 @@ public class HomeFragment extends Fragment implements ShapeClickInterface {
     }
 
     public void selectTool(DrawingTool tool) {
-        this.binding.canvas.setDrawingTool(tool);
+        binding.canvas.setDrawingTool(tool);
     }
 
     public void modeChange(boolean enable) {
         setEnable(binding.canvas.setEnable(enable));
         binding.changeMode.setBackgroundResource(enable ? R.drawable.ic_read_mode_foreground : R.drawable.ic_edit_mode_foreground);
-        Toast.makeText(this.getContext(),enable ? "수정 모드" : "읽기 모드", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this.getContext(), enable ? "수정 모드" : "읽기 모드", Toast.LENGTH_SHORT).show();
     }
 
     private int _getEnableColor(boolean enable) {

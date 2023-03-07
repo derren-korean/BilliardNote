@@ -2,9 +2,10 @@ package com.auto.billiardnote;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.view.View;
+import android.os.Environment;
 import android.view.Menu;
 
+import com.auto.billiardnote.fao.FileHandler;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
@@ -21,22 +22,26 @@ public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
+    private FileHandler fileHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         setSupportActionBar(binding.appBarMain.toolbar);
-        binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
+
+
+        _initFileIO();
+
+        binding.appBarMain.fab.setOnClickListener( v -> {
+            //TODO: ADD SAVE FUNCTION
+            FileHandler.write();
+            Snackbar.make(v, "저장할 꺼에요! 아직 기능이 추가되지 않았음다.", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
         });
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
@@ -51,6 +56,14 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
     }
 
+    private void _initFileIO() {
+        if (!isExternalStorageAvailable() || isExternalStorageReadOnly()) {
+            binding.appBarMain.fab.setEnabled(false);
+        } else {
+            FileHandler.getInstance(this);
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -63,5 +76,21 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+    private static boolean isExternalStorageReadOnly() {
+        String extStorageState = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState)) {
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean isExternalStorageAvailable() {
+        String extStorageState = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(extStorageState)) {
+            return true;
+        }
+        return false;
     }
 }
