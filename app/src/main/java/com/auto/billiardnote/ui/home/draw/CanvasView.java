@@ -6,27 +6,23 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.HashSet;
 
 public class CanvasView extends View {
 
     Context context;
     private final StraightLine line;
-    private final HashMap<DrawingTool, Ball> balls;
+    private final HashSet<Ball> balls;
     private DrawingTool drawingTool;
-    private ShapeClickInterface listener;
     public boolean enabled = true; // read-only: false, editable: true
 
     public void setClickListener(ShapeClickInterface listener) {
-        this.listener = listener;
     }
 
     public CanvasView(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
-        balls = new HashMap<>();
+        balls = new HashSet<>();
         line = new StraightLine();
         drawingTool = DrawingTool.CUE_BALL;
     }
@@ -34,16 +30,20 @@ public class CanvasView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        Arrays.stream(DrawingTool.values())
-                .filter(tool -> tool != DrawingTool.LINE)
-                .forEach(this::createCircle);
+        for (DrawingTool tool : DrawingTool.values()) {
+            if(tool != DrawingTool.LINE) {
+                createCircle(tool);
+            }
+        }
         this.setDrawingTool(DrawingTool.CUE_BALL);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         line.draw(canvas);
-        balls.values().forEach(ball -> ball.draw(canvas));
+        for (Ball ball : balls) {
+            ball.draw(canvas);
+        }
         canvas.save();
     }
 
@@ -83,7 +83,12 @@ public class CanvasView extends View {
         } else {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_MOVE:
-                    Objects.requireNonNull(balls.get(this.drawingTool)).touch_move(x, y);
+                    for (Ball ball : balls) {
+                        if(this.drawingTool.isSame(ball.getColor())) {
+                            ball.touch_move(x, y);
+                            break;
+                        }
+                    }
                     invalidate();
                     break;
                 case MotionEvent.ACTION_DOWN: case MotionEvent.ACTION_UP:
@@ -115,8 +120,8 @@ public class CanvasView extends View {
     public void createCircle(DrawingTool tool) {
         this.drawingTool = tool;
         Ball ball = new Ball( getWidth() / 2f, getHeight() / 2f, 40f, tool);
-        ball.setClickListener(listener);
-        balls.put(tool, ball);
+        ball.setClickListener();
+        balls.add(ball);
         this.invalidate();
     }
 

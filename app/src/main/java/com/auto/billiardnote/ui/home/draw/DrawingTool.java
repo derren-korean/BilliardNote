@@ -4,27 +4,23 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 public enum DrawingTool {
-    LINE(Color.BLACK),
+    LINE(Color.BLACK), // 순서가 중요함.
     CUE_BALL(Color.WHITE),
-    ORANGE_BALL(Color.rgb(255, 165, 0)),
+    ORANGE_BALL(Color.parseColor("#FFA500")),
     RED_BALL(Color.RED);
 
-    private int color;
+    private final int color;
 
     DrawingTool(int color) {
         this.color = color;
     }
 
-    public int getColor() {
-        return color;
-    }
-
-    public static Paint getPaint(DrawingTool type) {
+    public static Paint getPaint(DrawingTool tool) {
         Paint paint = new Paint();
         paint.setAntiAlias(true);
-        paint.setColor(type.color);
+        paint.setColor(tool.color);
         paint.setStyle(Paint.Style.STROKE);
-        if (DrawingTool.LINE == type) {
+        if (DrawingTool.LINE == tool) {
             paint.setStrokeCap(Paint.Cap.BUTT);
             paint.setStrokeJoin(Paint.Join.BEVEL);
             paint.setStrokeWidth(4f);
@@ -34,4 +30,7 @@ public enum DrawingTool {
         return paint;
     }
 
+    public boolean isSame(int color) {
+        return this.color == color;
+    }
 }

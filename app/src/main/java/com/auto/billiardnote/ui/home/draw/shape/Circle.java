@@ -1,5 +1,6 @@
 package com.auto.billiardnote.ui.home.draw.shape;
 
+import android.graphics.Canvas;
 import android.graphics.Paint;
 
 public class Circle {
@@ -9,14 +10,6 @@ public class Circle {
         this.x = x;
         this.y = y;
         this.r = r;
-    }
-
-    public float getX() {
-        return x;
-    }
-
-    public float getY() {
-        return y;
     }
 
     public void setCoordinate(float x, float y) {
@@ -30,5 +23,13 @@ public class Circle {
 
     protected boolean isWithin(float x, float y) {
         return (this.x-r) <= x && x <= (this.x+r) && (this.y-r) <= y && y <= (this.y+r);
+    }
+
+    public void draw(Canvas canvas, Paint paint) {
+        canvas.drawCircle(x, y, r, paint);
+    }
+
+    protected float abs(float n, boolean forX) {
+        return forX ? Math.abs(n - this.x) : Math.abs(n - this.y);
     }
 }
