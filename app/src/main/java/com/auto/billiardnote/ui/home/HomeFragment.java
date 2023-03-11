@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.auto.billiardnote.R;
 import com.auto.billiardnote.databinding.FragmentHomeBinding;
-import com.auto.billiardnote.fao.FileHandler;
+import com.auto.billiardnote.fao.FileIO;
 import com.auto.billiardnote.ui.home.draw.CanvasView;
 import com.auto.billiardnote.ui.home.draw.DrawingTool;
 import com.auto.billiardnote.ui.home.draw.ShapeClickInterface;
@@ -49,8 +49,8 @@ public class HomeFragment extends Fragment implements ShapeClickInterface {
         });
         // TODO: data save and load
         binding.imageView2.setOnClickListener(v -> {
-            FileHandler.read();
-            binding.textHome.setText(FileHandler.getMyData());
+            FileIO.read();
+            binding.textHome.setText(FileIO.getMyData());
         });
         binding.line.setOnClickListener(v -> _setToolNBGColor(binding.line));
         binding.cueBall.setOnClickListener(v -> _setToolNBGColor(binding.cueBall));
@@ -75,9 +75,13 @@ public class HomeFragment extends Fragment implements ShapeClickInterface {
 
     private void _setInitUIDrawingButton(boolean enable) {
         if (enable) {
-            DrawingButton button = drawingButtons.stream()
-                    .filter(b -> b.getTool() == binding.canvas.getDrawingTool())
-                    .findFirst().orElse(binding.cueBall);
+            DrawingButton button = binding.cueBall;
+            for (DrawingButton _button : drawingButtons) {
+                if (_button.getTool() == binding.canvas.getDrawingTool()) {
+                    button = _button;
+                    break;
+                }
+            }
             _setOtherToolsBGColor(button);
         }
     }
@@ -95,12 +99,14 @@ public class HomeFragment extends Fragment implements ShapeClickInterface {
 
     private void setEnable(boolean enable) {
         binding.canvas.setEnabled(enable);
-        drawingButtons.forEach(button -> button.setModeChange(enable));
+        for (DrawingButton button : drawingButtons) {
+            button.setModeChange(enable);
+        }
         _setInitUIDrawingButton(enable);
-        functionView.forEach(view -> {
-                view.setEnabled(enable);
-                view.setBackgroundColor(_getEnableColor(enable));
-        });
+        for (View view : functionView) {
+            view.setEnabled(enable);
+            view.setBackgroundColor(_getEnableColor(enable));
+        }
     }
 
     public void selectTool(DrawingTool tool) {

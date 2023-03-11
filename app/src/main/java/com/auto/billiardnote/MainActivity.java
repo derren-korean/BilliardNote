@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
 
-import com.auto.billiardnote.fao.FileHandler;
+import com.auto.billiardnote.fao.FileIO;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
-    private FileHandler fileHandler;
+    private FileIO fileIO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
         binding.appBarMain.fab.setOnClickListener( v -> {
             //TODO: ADD SAVE FUNCTION
-            FileHandler.write();
+            FileIO.write();
             Snackbar.make(v, "저장할 꺼에요! 아직 기능이 추가되지 않았음다.", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         });
@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         if (!isExternalStorageAvailable() || isExternalStorageReadOnly()) {
             binding.appBarMain.fab.setEnabled(false);
         } else {
-            FileHandler.getInstance(this);
+            FileIO.getInstance(this);
         }
     }
 

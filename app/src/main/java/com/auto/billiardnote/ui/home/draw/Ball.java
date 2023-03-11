@@ -7,31 +7,26 @@ import com.auto.billiardnote.ui.home.draw.shape.Circle;
 
 public class Ball extends Circle {
 
-    private Paint paint;
-    private final float TOLERANCE = 4;
-    private ShapeClickInterface clickListener;
+    private final Paint paint;
+    private final int color;
 
     public Ball (float x, float y, float r, DrawingTool tool)
     {
         super(x, y, r);
         paint = DrawingTool.getPaint(tool);
+        this.color = paint.getColor();
     }
 
-    public float getX() {
-        return super.getX();
-    }
-
-    public float getY() {
-        return super.getY();
-    }
+    public int getColor() { return color; }
 
     public void setCoordinate(float x, float y) {
         super.setCoordinate(x, y);
     }
 
     public boolean touch_move(float x, float y) {
-        float dx = Math.abs(x - super.getX());
-        float dy = Math.abs(y - super.getY());
+        float dx = super.abs(x, true);
+        float dy = super.abs(x, false);
+        float TOLERANCE = 4;
         if (dx >= TOLERANCE || dy >= TOLERANCE) {
             super.setCoordinate(Math.round(x), Math.round(y));
             return true;
@@ -44,11 +39,10 @@ public class Ball extends Circle {
     }
 
     public void draw(Canvas canvas) {
-        canvas.drawCircle(super.getX(), super.getY(), super.getRadius(), paint);
+        super.draw(canvas, paint);
     }
 
-    public void setClickListener(ShapeClickInterface listener) {
-        this.clickListener = listener;
+    public void setClickListener() {
     }
 
     public boolean isWithin(float x, float y) {

@@ -10,28 +10,28 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class FileHandler {
+public class FileIO {
 
-    private static volatile FileHandler INSTANCE = null;
+    private static volatile FileIO INSTANCE = null;
     private static File file = null;
     private static String myData = "test";
 
-    private FileHandler(Context context) {
+    private FileIO(Context context) {
         String filename = "SampleFile.txt";
         String filepath = context.getFilesDir().getPath();
         this.file = new File(filepath, filename);
     }
 
     // public static method to retrieve the singleton instance
-    public static FileHandler getInstance(Context context) {
+    public static FileIO getInstance(Context context) {
         // Check if the instance is already created
         if(INSTANCE == null) {
             // synchronize the block to ensure only one thread can execute at a time
-            synchronized (FileHandler.class) {
+            synchronized (FileIO.class) {
                 // check again if the instance is already created
                 if (INSTANCE == null) {
                     // create the singleton instance
-                    INSTANCE = new FileHandler(context);
+                    INSTANCE = new FileIO(context);
                 }
             }
         }
