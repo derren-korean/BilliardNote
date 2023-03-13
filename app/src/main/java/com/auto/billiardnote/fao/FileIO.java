@@ -14,16 +14,16 @@ public class FileIO {
 
     private static volatile FileIO INSTANCE = null;
     private static File file = null;
-    private static String myData = "test";
+    private static String myData = "";
 
     private FileIO(Context context) {
-        String filename = "SampleFile.txt";
+        String filename = "BilliardNote.txt";
         String filepath = context.getFilesDir().getPath();
-        this.file = new File(filepath, filename);
+        file = new File(filepath, filename);
     }
 
     // public static method to retrieve the singleton instance
-    public static FileIO getInstance(Context context) {
+    public static void getInstance(Context context) {
         // Check if the instance is already created
         if(INSTANCE == null) {
             // synchronize the block to ensure only one thread can execute at a time
@@ -36,13 +36,13 @@ public class FileIO {
             }
         }
         // return the singleton instance
-        return INSTANCE;
     }
 
-    public static void write() {
+    public static void write(String noteInfo) {
+        myData = noteInfo;
         try {
             FileOutputStream fos = new FileOutputStream(file.getPath());
-            fos.write("myData".getBytes());
+            fos.write(myData.getBytes());
             fos.close();
         } catch (IOException e) {
             e.printStackTrace();

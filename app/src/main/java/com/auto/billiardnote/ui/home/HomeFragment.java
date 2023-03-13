@@ -15,9 +15,11 @@ import androidx.lifecycle.ViewModelProvider;
 import com.auto.billiardnote.R;
 import com.auto.billiardnote.databinding.FragmentHomeBinding;
 import com.auto.billiardnote.fao.FileIO;
+import com.auto.billiardnote.fao.NoteInfo;
 import com.auto.billiardnote.ui.home.draw.CanvasView;
 import com.auto.billiardnote.ui.home.draw.DrawingTool;
 import com.auto.billiardnote.ui.home.draw.ShapeClickInterface;
+import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +52,10 @@ public class HomeFragment extends Fragment implements ShapeClickInterface {
         // TODO: data save and load
         binding.imageView2.setOnClickListener(v -> {
             FileIO.read();
-            binding.textHome.setText(FileIO.getMyData());
+
+            NoteInfo note = new GsonBuilder().create().fromJson(FileIO.getMyData(), NoteInfo.class);
+            binding.canvas.load(note);
+            binding.textHome.setText(note.getMemo());
         });
         binding.line.setOnClickListener(v -> _setToolNBGColor(binding.line));
         binding.cueBall.setOnClickListener(v -> _setToolNBGColor(binding.cueBall));
@@ -132,6 +137,15 @@ public class HomeFragment extends Fragment implements ShapeClickInterface {
     @Override
     public void onCircleClick() {
 
+    }
+
+    public void save() {
+        NoteInfo note = new NoteInfo(
+                binding.canvas.getLine(),
+                binding.canvas.getBalls(),
+                binding.textHome.getText().toString()
+        );
+        FileIO.write(note.toString());
     }
 
 }

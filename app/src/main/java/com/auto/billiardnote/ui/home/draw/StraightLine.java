@@ -13,6 +13,12 @@ public class StraightLine {
     private final Paint paint;
     private PathPoint pathPoint;
 
+    public StraightLine(StraightLine line) {
+        this.pathHistory = line.pathHistory;
+        this.paint = line.paint;
+        this.pathPoint = line.pathPoint;
+    }
+
     protected StraightLine() {
         pathPoint = new PathPoint();
         pathHistory = new ArrayList<>();
@@ -50,5 +56,9 @@ public class StraightLine {
             return true;
         }
         return false;
+    }
+
+    public ArrayList<PathPoint> getPathHistory() {
+        return pathHistory;
     }
 }
