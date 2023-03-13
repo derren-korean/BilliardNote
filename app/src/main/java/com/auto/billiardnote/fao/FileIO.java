@@ -47,6 +47,7 @@ public class FileIO {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        myData = "";
     }
 
     public static void read() {
