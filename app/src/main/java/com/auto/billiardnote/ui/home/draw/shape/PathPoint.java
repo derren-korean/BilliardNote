@@ -4,9 +4,11 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 
+import androidx.annotation.NonNull;
+
 public class PathPoint {
 
-    protected final float IGNORE = -1.0f;
+    protected final static float IGNORE = -1.0f;
     private float startX, startY, stopX, stopY;
     private Path path;
 
@@ -15,7 +17,7 @@ public class PathPoint {
         path = new Path();
     }
 
-    public PathPoint(PathPoint pathPoint) {
+    public PathPoint(@NonNull PathPoint pathPoint) {
         this.startX = pathPoint.startX;
         this.startY = pathPoint.startY;
         this.stopX = pathPoint.stopX;
@@ -60,7 +62,7 @@ public class PathPoint {
         path = new Path();
     }
 
-    public void draw(Canvas canvas, Paint paint) {
+    public void draw(@NonNull Canvas canvas, Paint paint) {
         canvas.drawLine(startX, startY, stopX, stopY, paint);
     }
 

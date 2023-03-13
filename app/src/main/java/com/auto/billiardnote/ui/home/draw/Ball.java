@@ -19,10 +19,6 @@ public class Ball extends Circle {
 
     public int getColor() { return color; }
 
-    public void setCoordinate(float x, float y) {
-        super.setCoordinate(x, y);
-    }
-
     public boolean touch_move(float x, float y) {
         float dx = super.abs(x, true);
         float dy = super.abs(x, false);
@@ -32,10 +28,6 @@ public class Ball extends Circle {
             return true;
         }
         return false;
-    }
-
-    public float getRadius() {
-        return super.getRadius();
     }
 
     public void draw(Canvas canvas) {

@@ -4,7 +4,9 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 
 public class Circle {
-    private float x, y, r;
+    private float x;
+    private float y;
+    private final float r;
     public Circle(float x, float y, float r)
     {
         this.x = x;
@@ -15,10 +17,6 @@ public class Circle {
     public void setCoordinate(float x, float y) {
         this.x = x;
         this.y = y;
-    }
-
-    public float getRadius() {
-        return r;
     }
 
     protected boolean isWithin(float x, float y) {

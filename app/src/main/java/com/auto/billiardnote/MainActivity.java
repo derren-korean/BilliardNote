@@ -1,16 +1,21 @@
 package com.auto.billiardnote;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
 
 import com.auto.billiardnote.fao.FileIO;
+import com.auto.billiardnote.ui.home.HomeFragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -33,14 +38,14 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setSupportActionBar(binding.appBarMain.toolbar);
-
-
         _initFileIO();
 
         binding.appBarMain.fab.setOnClickListener( v -> {
             //TODO: ADD SAVE FUNCTION
-            FileIO.write();
-            Snackbar.make(v, "저장할 꺼에요! 아직 기능이 추가되지 않았음다.", Snackbar.LENGTH_LONG)
+            HomeFragment a = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main).getChildFragmentManager().getFragments().get(0);
+            a.save();
+            // TODO: 저장할 때 타이틀 입력하기 & path serialize에 특수문자 때문에 JSON malformed occurred!
+            Snackbar.make(v, "저장완료!!!", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         });
         DrawerLayout drawer = binding.drawerLayout;
@@ -54,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
     }
 
     private void _initFileIO() {

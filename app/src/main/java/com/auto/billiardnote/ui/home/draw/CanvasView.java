@@ -6,13 +6,18 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.auto.billiardnote.fao.NoteInfo;
+import com.auto.billiardnote.ui.home.draw.shape.PathPoint;
+
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 
 public class CanvasView extends View {
 
     Context context;
-    private final StraightLine line;
-    private final HashSet<Ball> balls;
+    private StraightLine line;
+    private HashSet<Ball> balls;
     private DrawingTool drawingTool;
     public boolean enabled = true; // read-only: false, editable: true
 
@@ -143,4 +148,19 @@ public class CanvasView extends View {
     public DrawingTool getDrawingTool() {
         return this.drawingTool;
     }
+
+    public HashSet<Ball> getBalls() {
+        return balls;
+    }
+
+    public StraightLine getLine() {
+        return line;
+    }
+
+    public void load(NoteInfo info) {
+        this.line = info.getStraightLine();
+//        this.line = new StraightLine(info.getStraightLine());
+        this.balls = info.getBalls();
+    }
+
 }
