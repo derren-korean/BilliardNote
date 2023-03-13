@@ -7,11 +7,8 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.auto.billiardnote.fao.NoteInfo;
-import com.auto.billiardnote.ui.home.draw.shape.PathPoint;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 
 public class CanvasView extends View {
 
@@ -158,9 +155,12 @@ public class CanvasView extends View {
     }
 
     public void load(NoteInfo info) {
-        this.line = info.getStraightLine();
-//        this.line = new StraightLine(info.getStraightLine());
-        this.balls = info.getBalls();
+        this.line = new StraightLine(info.getStraightLine());
+        this.balls = new HashSet<>();
+        for (Ball ball : info.getBalls()) {
+            this.balls.add(new Ball(ball));
+        }
+        invalidate();
     }
 
 }

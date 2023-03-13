@@ -7,6 +7,13 @@ public class Circle {
     private float x;
     private float y;
     private final float r;
+
+    public Circle(Circle circle) {
+        this.x = circle.x;
+        this.y = circle.y;
+        this.r = circle.r;
+    }
+
     public Circle(float x, float y, float r)
     {
         this.x = x;
@@ -19,7 +26,7 @@ public class Circle {
         this.y = y;
     }
 
-    protected boolean isWithin(float x, float y) {
+    public boolean isWithin(float x, float y) {
         return (this.x-r) <= x && x <= (this.x+r) && (this.y-r) <= y && y <= (this.y+r);
     }
 
@@ -27,7 +34,7 @@ public class Circle {
         canvas.drawCircle(x, y, r, paint);
     }
 
-    protected float abs(float n, boolean forX) {
+    public float abs(float n, boolean forX) {
         return forX ? Math.abs(n - this.x) : Math.abs(n - this.y);
     }
 }
