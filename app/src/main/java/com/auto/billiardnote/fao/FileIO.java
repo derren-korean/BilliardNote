@@ -2,6 +2,8 @@ package com.auto.billiardnote.fao;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -23,7 +25,7 @@ public class FileIO {
     }
 
     // public static method to retrieve the singleton instance
-    public static void getInstance(Context context) {
+    public static void getInstance(@NonNull Context context) {
         // Check if the instance is already created
         if(INSTANCE == null) {
             // synchronize the block to ensure only one thread can execute at a time
@@ -54,8 +56,7 @@ public class FileIO {
         try {
             FileInputStream fis = new FileInputStream(file.getPath());
             DataInputStream in = new DataInputStream(fis);
-            BufferedReader br =
-                    new BufferedReader(new InputStreamReader(in));
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
             String strLine;
             while ((strLine = br.readLine()) != null) {
                 myData = myData + strLine;
