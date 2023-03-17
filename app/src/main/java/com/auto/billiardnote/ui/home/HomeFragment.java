@@ -29,6 +29,7 @@ public class HomeFragment extends Fragment implements ShapeClickInterface {
     private FragmentHomeBinding binding;
     private ArrayList<DrawingButton> drawingButtons;
     private ArrayList<View> functionView;
+    public boolean isEnabled = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -38,12 +39,11 @@ public class HomeFragment extends Fragment implements ShapeClickInterface {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-
         final TextView textView = binding.textHome;
         final CanvasView canvasView = binding.canvas;
         homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         _initView(textView, canvasView);
-
+        this.isEnabled = canvasView.enabled;
 
         binding.undoLine.setOnClickListener(v -> {
             canvasView.unDo();
@@ -51,6 +51,7 @@ public class HomeFragment extends Fragment implements ShapeClickInterface {
         });
         // TODO: data save and load
         binding.imageView2.setOnClickListener(v -> {
+            this.isEnabled = false;
             FileIO.read();
 
             NoteInfo note = new GsonBuilder().create().fromJson(FileIO.getMyData(), NoteInfo.class);
@@ -139,13 +140,15 @@ public class HomeFragment extends Fragment implements ShapeClickInterface {
 
     }
 
-    public void save() {
+    public void save(String title) {
         NoteInfo note = new NoteInfo(
                 binding.canvas.getLine(),
                 binding.canvas.getBalls(),
-                binding.textHome.getText().toString()
+                binding.textHome.getText().toString(),
+                title
         );
         FileIO.write(note.toString());
+        modeChange(false);
     }
 
 }
