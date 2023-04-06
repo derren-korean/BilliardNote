@@ -2,21 +2,24 @@ package com.auto.billiardnote.ui.home
 
 import android.graphics.Color
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.auto.billiardnote.R
 import com.auto.billiardnote.databinding.FragmentHomeBinding
-import com.auto.billiardnote.fao.FileIO
-import com.auto.billiardnote.fao.NoteInfo
+import com.auto.billiardnote.fao.Note
+import com.auto.billiardnote.fao.NoteRepository
 import com.auto.billiardnote.ui.home.draw.CanvasView
 import com.auto.billiardnote.ui.home.draw.DrawingTool
 import com.auto.billiardnote.ui.home.draw.ShapeClickInterface
-import com.google.gson.GsonBuilder
+import com.google.android.material.snackbar.Snackbar
 import java.util.*
 
 class HomeFragment : Fragment(), ShapeClickInterface {
@@ -24,6 +27,9 @@ class HomeFragment : Fragment(), ShapeClickInterface {
     private var drawingButtons: ArrayList<DrawingButton>? = null
     private var functionView: ArrayList<View>? = null
     var isEnabled = false
+    val repo:NoteRepository by lazy {
+        NoteRepository(this.requireContext())
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?, savedInstanceState: Bundle?
@@ -39,17 +45,38 @@ class HomeFragment : Fragment(), ShapeClickInterface {
             textView.text = text
         }
         _initView(textView, canvasView)
-        isEnabled = canvasView.status
+        isEnabled = canvasView.mode
         binding!!.undoLine.setOnClickListener {
             canvasView.unDo()
             _setToolNBGColor(binding!!.line)
         }
+        binding!!.fab.setOnClickListener { v: View? ->
+            // TODO: load input data if exist
+            val noteName = EditText(binding!!.root.context)
+            noteName.inputType = InputType.TYPE_CLASS_TEXT
+
+            val builder = AlertDialog.Builder(
+                binding!!.root.context
+            )
+            builder.setView(noteName)
+                .setTitle("노트 저장하기")
+                .setPositiveButton("확인") { _, _ ->
+                    save(noteName.text.toString())
+                    // TODO: 저장할 때 타이틀 입력하기 & path serialize에 특수문자 때문에 JSON malformed occurred!
+                    Snackbar.make((v)!!, "저장완료!!!", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show()
+                }
+                .setNegativeButton(
+                    "취소"
+                ) { dialog, _ -> dialog.cancel() }
+            val dialog = builder.create()
+            dialog.show()
+        }
         // TODO: data save and load
         binding!!.imageView2.setOnClickListener {
             isEnabled = false
-            FileIO.read()
-            val note = GsonBuilder().create().fromJson(FileIO.myData, NoteInfo::class.java)
-            binding!!.canvas.load(note)
+
+//            binding!!.canvas.load(note)
         }
         binding!!.line.setOnClickListener {
             _setToolNBGColor(
@@ -71,7 +98,7 @@ class HomeFragment : Fragment(), ShapeClickInterface {
                 binding!!.redBall
             )
         }
-        binding!!.changeMode.setOnClickListener { modeChange(!binding!!.canvas.status) }
+        binding!!.changeMode.setOnClickListener { changeTo(!binding!!.canvas.mode) }
         return root
     }
 
@@ -89,7 +116,7 @@ class HomeFragment : Fragment(), ShapeClickInterface {
         for (i in drawingButtons!!.indices) {
             drawingButtons!![i].tool = DrawingTool.values()[i]
         }
-        modeChange(canvasView.status)
+        changeTo(canvasView.mode)
     }
 
     private fun _setInitUIDrawingButton(enable: Boolean) {
@@ -119,7 +146,7 @@ class HomeFragment : Fragment(), ShapeClickInterface {
     private fun setEnable(enable: Boolean) {
         binding!!.canvas.isEnabled = enable
         for (button in drawingButtons!!) {
-            button.setModeChange(enable)
+            button.changeTo(enable)
         }
         _setInitUIDrawingButton(enable)
         for (view in functionView!!) {
@@ -128,14 +155,14 @@ class HomeFragment : Fragment(), ShapeClickInterface {
         }
     }
 
-    fun selectTool(tool: DrawingTool?) {
+    private fun selectTool(tool: DrawingTool?) {
         binding!!.canvas.drawingTool = tool!!
     }
 
-    fun modeChange(enable: Boolean) {
-        setEnable(binding!!.canvas.setEnable(enable))
-        binding!!.changeMode.setBackgroundResource(if (enable) R.drawable.ic_read_mode_foreground else R.drawable.ic_edit_mode_foreground)
-        Toast.makeText(this.context, if (enable) "수정 모드" else "읽기 모드", Toast.LENGTH_SHORT).show()
+    private fun changeTo(edit: Boolean) {
+        setEnable(binding!!.canvas.changeTo(edit))
+        binding!!.changeMode.setBackgroundResource(if (edit) R.drawable.ic_read_mode_foreground else R.drawable.ic_edit_mode_foreground)
+        Toast.makeText(this.context, if (edit) "수정 모드" else "읽기 모드", Toast.LENGTH_SHORT).show()
     }
 
     private fun _getEnableColor(enable: Boolean): Int {
@@ -148,14 +175,15 @@ class HomeFragment : Fragment(), ShapeClickInterface {
     }
 
     override fun onCircleClick() {}
-    fun save(noteName: String?) {
-//        NoteInfo note = new NoteInfo(
-//                binding.canvas.getLine(),
-//                binding.canvas.getBalls(),
-//                binding.textHome.getText().toString(),
-//                noteName
-//        );
-//        FileIO.write(note.toString());
-        modeChange(false)
+    private fun save(noteName: String) {
+        val canvas = binding!!.canvas
+        val note = Note(
+            0,
+            canvas.line,
+            canvas.balls,
+            binding!!.textHome.text.toString(),
+            noteName)
+        repo.insertNote(note)
+        changeTo(false)
     }
 }

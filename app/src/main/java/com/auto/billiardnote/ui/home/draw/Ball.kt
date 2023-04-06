@@ -3,6 +3,7 @@ package com.auto.billiardnote.ui.home.draw
 import android.graphics.Canvas
 import android.graphics.Paint
 import com.auto.billiardnote.ui.home.draw.shape.Circle
+import kotlin.math.roundToInt
 
 class Ball {
     private val paint: Paint?
@@ -25,15 +26,15 @@ class Ball {
     constructor(x: Float, y: Float, r: Float, tool: DrawingTool) {
         circle = Circle(x, y, r)
         paint = DrawingTool.Companion.getPaint(tool)
-        color = paint.getColor()
+        color = paint.color
     }
 
     fun touch_move(x: Float, y: Float): Boolean {
         val dx = circle.abs(x, true)
         val dy = circle.abs(x, false)
-        val TOLERANCE = 4f
-        if (dx >= TOLERANCE || dy >= TOLERANCE) {
-            circle.setCoordinate(Math.round(x).toFloat(), Math.round(y).toFloat())
+        val tolerance = 4f
+        if (dx >= tolerance || dy >= tolerance) {
+            circle.setCoordinate(x.roundToInt().toFloat(), y.roundToInt().toFloat())
             return true
         }
         return false

@@ -34,6 +34,6 @@ class Circle {
     }
 
     fun abs(n: Float, forX: Boolean): Float {
-        return if (forX) Math.abs(n - x) else Math.abs(n - y)
+        return if (forX) kotlin.math.abs(n - x) else kotlin.math.abs(n - y)
     }
 }

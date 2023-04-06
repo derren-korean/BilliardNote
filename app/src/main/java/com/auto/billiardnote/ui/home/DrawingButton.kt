@@ -21,10 +21,10 @@ class DrawingButton : AppCompatImageButton {
 //        children.forEach { it.isEnabled = enabled }
     }
 
-    fun setModeChange(enable: Boolean) {
-        isEnabled = enable
+    fun changeTo(editMode: Boolean) {
+        isEnabled = editMode
         val enableColor = Color.WHITE
         val disableColor = Color.DKGRAY
-        setBackgroundColor(if (enable) enableColor else disableColor)
+        setBackgroundColor(if (editMode) enableColor else disableColor)
     }
 }

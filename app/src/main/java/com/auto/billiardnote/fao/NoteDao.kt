@@ -1,25 +1,23 @@
 package com.auto.billiardnote.fao
 
 import androidx.room.*
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Flowable
 
 @Dao
 interface NoteDao {
         @Insert(onConflict = OnConflictStrategy.REPLACE)
-        suspend fun insertNote(vararg note: NoteInfo)
+        fun insert(vararg note: Note): Completable
 
         @Update
-        suspend fun updateNote(vararg note: NoteInfo)
+        fun update(vararg note: Note): Completable
 
         @Delete
-        suspend fun deleteNote(vararg note: NoteInfo)
+        fun delete(vararg note: Note)
 
         @Query("SELECT * FROM note")
-        suspend fun getAll(): List<NoteInfo>
+        fun getAll(): Flowable<List<Note>>
 
         @Query("SELECT * FROM note WHERE id = :id")
-        suspend fun loadUserById(id: Int): NoteInfo
-
-        @Query("SELECT * from note WHERE region IN (:regions)")
-        suspend fun loadUsersByRegion(regions: List<String>): List<NoteInfo>
-
+        fun loadById(id: Int): Flowable<Note>
 }
