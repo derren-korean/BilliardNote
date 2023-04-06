@@ -5,7 +5,7 @@ import android.graphics.Paint
 import com.auto.billiardnote.ui.home.draw.shape.PathPoint
 
 class StraightLine {
-    val pathHistory: ArrayList<PathPoint>
+    private val pathHistory: ArrayList<PathPoint>
     private val paint: Paint
     private var pathPoint: PathPoint
 

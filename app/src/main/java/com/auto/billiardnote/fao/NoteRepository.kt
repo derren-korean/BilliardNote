@@ -1,28 +1,30 @@
 package com.auto.billiardnote.fao
 
 import android.content.Context
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Flowable
 
 class NoteRepository(context: Context) {
 
-    var db: NoteDao = AppDatabase.getInstance(context)?.noteDao()!!
+    var db: NoteDao = AppDatabase.getInstance(context).noteDao()
 
-    suspend fun getAllNotes(): List<NoteInfo> {
-        return db.getAll();
+    fun getAllNotes(): Flowable<List<Note>> {
+        return db.getAll()
     }
 
-    suspend fun getNote(id: Int) {
-        db.loadUserById(id)
+    fun getNote(id: Int): Flowable<Note>     {
+        return db.loadById(id)
     }
 
-    suspend fun insertNote(note: NoteInfo) {
-        db.insertNote(note)
+    fun insertNote(note: Note): Completable {
+        return db.insert(note)
     }
 
-    suspend fun updateUser(note: NoteInfo) {
-        db.updateNote(note)
+    fun updateNote(note: Note): Completable {
+        return db.update(note)
     }
 
-    suspend fun deleteUser(note: NoteInfo) {
-        db.deleteNote(note)
+    fun delete(note: Note) {
+        db.delete(note)
     }
 }

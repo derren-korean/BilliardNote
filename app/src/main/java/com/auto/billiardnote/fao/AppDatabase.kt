@@ -6,28 +6,27 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [NoteInfo::class], version = 1, exportSchema = false)
+@Database(entities = [Note::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun noteDao() : NoteDao
 
     companion object {
-        private var INSTANCE: AppDatabase? = null
+        @Volatile private var INSTANCE: AppDatabase? = null
 
-        fun getInstance(context: Context): AppDatabase? {
-            if (INSTANCE == null) {
-                synchronized(AppDatabase::class) {
-                    INSTANCE = Room.databaseBuilder(context.applicationContext,
-                        AppDatabase::class.java, "billiard-note.db").allowMainThreadQueries()
-                        .build()
-                }
+        fun getInstance(context: Context): AppDatabase =
+            INSTANCE ?: synchronized(this) {
+                INSTANCE ?: buildDatabase(context).also { INSTANCE = it }
             }
-            return INSTANCE
-        }
 
-        fun destroyInstance() {
-            INSTANCE = null
-        }
+        private fun buildDatabase(context: Context) =
+            Room.databaseBuilder(context.applicationContext,
+                AppDatabase::class.java, "billiard-note.db")
+                .build()
+    }
+
+    fun destroyInstance() {
+        INSTANCE = null
     }
 }

@@ -5,21 +5,22 @@ import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import com.auto.billiardnote.fao.NoteInfo
+import com.auto.billiardnote.fao.Note
 
 class CanvasView(context: Context, attrs: AttributeSet?) : View(
     context, attrs
 ) {
-    private val line: StraightLine = StraightLine()
-    private val balls: HashSet<Ball> = HashSet()
+    val line: StraightLine = StraightLine()
+//    val balls: HashSet<Ball> = HashSet()
+    val balls: Balls = Balls()
     var drawingTool: DrawingTool
-    var status = true // read-only: false, editable: true
+    var mode = true // read-only: false, editable: true
 
     fun setClickListener(listener: ShapeClickInterface?) {}
 
     init {
         drawingTool = DrawingTool.CUE_BALL
-        setEnable(true)
+        changeTo(true)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -41,7 +42,7 @@ class CanvasView(context: Context, attrs: AttributeSet?) : View(
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (!status) {
+        if (!mode) {
             return false
         }
         var x = event.x
@@ -120,12 +121,13 @@ class CanvasView(context: Context, attrs: AttributeSet?) : View(
         }
     }
 
-    fun setEnable(enable: Boolean): Boolean {
-        this.status = enable
-        return this.status
+    fun changeTo(edit: Boolean): Boolean {
+        this.mode = edit
+        return this.mode
     }
 
-    fun load(info: NoteInfo?) {
+    fun load(note: Note) {
+//        this.line = StraightLine(info.straightLine)
 //        this.line = new StraightLine(info.getStraightLine());
 //        this.balls = new HashSet<>();
 //        for (Ball ball : info.getBalls()) {
