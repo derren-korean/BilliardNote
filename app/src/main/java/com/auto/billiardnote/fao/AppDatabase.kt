@@ -22,7 +22,8 @@ abstract class AppDatabase : RoomDatabase() {
 
         private fun buildDatabase(context: Context) =
             Room.databaseBuilder(context.applicationContext,
-                AppDatabase::class.java, "billiard-note.db")
+                AppDatabase::class.java, "billiard-note")
+                .allowMainThreadQueries()
                 .build()
     }
 

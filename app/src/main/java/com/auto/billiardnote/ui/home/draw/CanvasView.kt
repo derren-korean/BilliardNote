@@ -10,9 +10,9 @@ import com.auto.billiardnote.fao.Note
 class CanvasView(context: Context, attrs: AttributeSet?) : View(
     context, attrs
 ) {
-    val line: StraightLine = StraightLine()
+    var line: StraightLine = StraightLine()
 //    val balls: HashSet<Ball> = HashSet()
-    val balls: Balls = Balls()
+    var balls: Balls = Balls()
     var drawingTool: DrawingTool
     var mode = true // read-only: false, editable: true
 
@@ -127,7 +127,8 @@ class CanvasView(context: Context, attrs: AttributeSet?) : View(
     }
 
     fun load(note: Note) {
-//        this.line = StraightLine(info.straightLine)
+        this.line = StraightLine(note.straightLine)
+        this.balls = note.balls
 //        this.line = new StraightLine(info.getStraightLine());
 //        this.balls = new HashSet<>();
 //        for (Ball ball : info.getBalls()) {
