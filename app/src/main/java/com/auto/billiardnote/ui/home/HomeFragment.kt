@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.auto.billiardnote.R
 import com.auto.billiardnote.databinding.FragmentHomeBinding
 import com.auto.billiardnote.fao.Note
@@ -20,6 +21,7 @@ import com.auto.billiardnote.ui.home.draw.CanvasView
 import com.auto.billiardnote.ui.home.draw.DrawingTool
 import com.auto.billiardnote.ui.home.draw.ShapeClickInterface
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.GsonBuilder
 import java.util.*
 
 class HomeFragment : Fragment(), ShapeClickInterface {
@@ -75,7 +77,12 @@ class HomeFragment : Fragment(), ShapeClickInterface {
         // TODO: data save and load
         binding!!.imageView2.setOnClickListener {
             isEnabled = false
+            System.out.println("repo_start")
+            System.out.println(repo)
+            System.out.println("--------")
 
+            System.out.println("endOfGetAll")
+//            var note: Note = repo.getAllNotes().blockingFirst().get(0)
 //            binding!!.canvas.load(note)
         }
         binding!!.line.setOnClickListener {

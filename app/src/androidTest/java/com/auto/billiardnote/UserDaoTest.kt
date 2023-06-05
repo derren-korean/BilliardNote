@@ -89,7 +89,6 @@ class UserDaoTest {
     @Test fun deleteAndGetUser() {
         // Given that we have a user in the data source
         database.noteDao().insert(noteInfo).blockingAwait()
-
         //When we are deleting all users
         database.noteDao().delete()
         // When subscribing to the emissions of the user
@@ -100,6 +99,8 @@ class UserDaoTest {
     }
 
     companion object {
-        private val noteInfo = GsonBuilder().create().fromJson("", Note::class.java)
+        var dummy: String = "{\"balls\":[{\"circle\":{\"r\":40.0,\"x\":111.0,\"y\":279.0},\"color\":-1,\"paint\":{\"mNativePaint\":4109211472}},{\"circle\":{\"r\":40.0,\"x\":441.0,\"y\":291.0},\"color\":-65536,\"paint\":{\"mNativePaint\":4109209744}},{\"circle\":{\"r\":40.0,\"x\":294.0,\"y\":287.0},\"color\":-23296,\"paint\":{\"mNativePaint\":4109207872}}],\"id\":0,\"memo\":\"\",\"name\":\"tt\",\"straightLine\":{\"paint\":{\"mNativePaint\":4109203264},\"pathHistory\":[{\"path\":{\"isSimplePath\":true},\"startX\":87.95117,\"startY\":261.95923,\"stopX\":774.9263,\"stopY\":290.96313}],\"pathPoint\":{\"path\":{\"isSimplePath\":true},\"startX\":87.95117,\"startY\":261.95923,\"stopX\":774.9263,\"stopY\":290.96313}}}"
+//        var j = GsonBuilder().create().toJson(dummy)
+        private val noteInfo = GsonBuilder().create().fromJson(dummy, Note::class.java)
     }
 }
